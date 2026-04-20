@@ -1,6 +1,670 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
-}
-<h1>@ViewData["Title"]</h1>
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Парсер тендеров ЭТП Московской области | Проект на C#</title>
 
-<p>Use this page to detail your site's privacy policy.</p>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Highlight.js для подсветки кода -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --success: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .project-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .hero .lead {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            margin-bottom: 30px;
+        }
+
+        /* Cards */
+        .card-custom {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            border: none;
+        }
+
+        .card-custom:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .card-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .card-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .tech-item {
+            background: #f0f0f0;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .tech-item:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        /* Feature List */
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-list li i {
+            color: #10b981;
+            margin-right: 12px;
+            font-size: 1.2rem;
+        }
+
+        /* GitHub Button */
+        .btn-github {
+            background: #24292e;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-github:hover {
+            background: #2c3e50;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            color: white;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1a1a2e;
+            color: white;
+            padding: 40px 0;
+            margin-top: 60px;
+        }
+
+        /* Animations */
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero .lead {
+                font-size: 1rem;
+            }
+        }
+
+        /* Stats */
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #667eea;
+        }
+
+        /* Architecture Diagram */
+        .arch-diagram {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .arch-step {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .arch-step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin: 0 auto 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-content">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-8">
+                    <div class="project-badge">
+                        <i class="fas fa-code-branch"></i> Тестовое задание | .NET Developer
+                    </div>
+                    <h1 class="fade-in-up">
+                        Парсер тендеров ЭТП Московской области
+                    </h1>
+                    <p class="lead fade-in-up" style="animation-delay: 0.2s;">
+                        Автоматизированный сбор и структурирование информации о тендерах<br>
+                        с электронной торговой площадки market.mosreg.ru
+                    </p>
+                    <div class="mt-4 fade-in-up" style="animation-delay: 0.3s;">
+                        <a href="https://github.com/Stanislaw-P/Tender-parsing" class="btn btn-github me-3" target="_blank">
+                            <i class="fab fa-github me-2"></i> GitHub репозиторий
+                        </a>
+                        <a href="#demo" class="btn btn-outline-light">
+                            <i class="fas fa-play me-2"></i> Демо
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+
+        <!-- О проекте -->
+        <div class="row mb-5" data-aos="fade-up">
+            <div class="col-12">
+                <div class="card-custom p-4">
+                    <div class="text-center mb-4">
+                        <div class="card-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <h2>О проекте</h2>
+                        <p class="text-muted">Краткое описание и цели разработки</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-8 mx-auto">
+                            <p class="lead text-center">
+                                Консольное приложение на C# для получения детальной информации о тендерах
+                                с электронной торговой площадки Московской области через публичное API и парсинг HTML.
+                            </p>
+                            <hr class="my-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5><i class="fas fa-check-circle text-success me-2"></i>Основные возможности</h5>
+                                    <ul class="feature-list">
+                                        <li><i class="fas fa-search"></i> Поиск тендера по номеру</li>
+                                        <li><i class="fas fa-database"></i> Получение базовой информации через API</li>
+                                        <li><i class="fas fa-file-alt"></i> Парсинг HTML страницы извещения</li>
+                                        <li><i class="fas fa-paperclip"></i> Сбор ссылок на документацию</li>
+                                        <li><i class="fas fa-clock"></i> Конвертация времени в UTC+7 (Новосибирск)</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5><i class="fas fa-shield-alt text-success me-2"></i>Особенности реализации</h5>
+                                    <ul class="feature-list">
+                                        <li><i class="fas fa-code"></i> Чистая архитектура (Clean Architecture)</li>
+                                        <li><i class="fas fa-spinner"></i> Асинхронное программирование (async/await)</li>
+                                        <li><i class="fas fa-bug"></i> Полная обработка ошибок и валидация</li>
+                                        <li><i class="fas fa-chart-line"></i> Singleton паттерн для HttpClient</li>
+                                        <li><i class="fas fa-tachometer-alt"></i> Оптимизированные HTTP запросы</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Технологии -->
+        <div class="row mb-5" data-aos="fade-up" data-aos-delay="100">
+            <div class="col-12">
+                <div class="card-custom p-4 text-center">
+                    <div class="card-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h2>Технологический стек</h2>
+                    <p class="text-muted">Инструменты и библиотеки, использованные в проекте</p>
+                    <div class="tech-stack justify-content-center">
+                        <span class="tech-item"><i class="fab fa-microsoft"></i> .NET 9.0</span>
+                        <span class="tech-item"><i class="fas fa-code"></i> C# 13</span>
+                        <span class="tech-item"><i class="fas fa-globe"></i> ASP.NET Core</span>
+                        <span class="tech-item"><i class="fas fa-database"></i> HttpClient</span>
+                        <span class="tech-item"><i class="fas fa-code-branch"></i> HtmlAgilityPack</span>
+                        <span class="tech-item"><i class="fas fa-file-code"></i> System.Text.Json</span>
+                        <span class="tech-item"><i class="fab fa-bootstrap"></i> Bootstrap 5</span>
+                        <span class="tech-item"><i class="fab fa-js"></i> JavaScript (ES6)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Архитектура -->
+        <div class="row mb-5" data-aos="fade-up" data-aos-delay="200">
+            <div class="col-12">
+                <div class="card-custom p-4">
+                    <div class="text-center mb-4">
+                        <div class="card-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <h2>Архитектура приложения</h2>
+                        <p class="text-muted">Как происходит получение данных</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="arch-step">
+                                <div class="arch-step-number">1</div>
+                                <h5 class="text-center">API Запрос</h5>
+                                <p class="small text-center">
+                                    POST запрос к API для получения базовой информации о тендере
+                                </p>
+                                <code class="d-block text-center small">/api/Trade/GetTradesForParticipantOrAnonymous</code>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="arch-step">
+                                <div class="arch-step-number">2</div>
+                                <h5 class="text-center">Парсинг HTML</h5>
+                                <p class="small text-center">
+                                    GET запрос страницы извещения и извлечение дополнительных данных
+                                </p>
+                                <code class="d-block text-center small">/Trade/ViewTrade/{id}</code>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="arch-step">
+                                <div class="arch-step-number">3</div>
+                                <h5 class="text-center">Документация</h5>
+                                <p class="small text-center">
+                                    Получение списка файлов и ссылок на документацию
+                                </p>
+                                <code class="d-block text-center small">/api/Trade/{id}/GetTradeDocuments</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <div class="alert alert-info">
+                            <i class="fas fa-sync-alt me-2"></i>
+                            Все данные агрегируются в единую структуру и отображаются пользователю
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Пример кода -->
+        <div class="row mb-5" data-aos="fade-up" data-aos-delay="300">
+            <div class="col-12">
+                <div class="card-custom p-4">
+                    <div class="text-center mb-4">
+                        <div class="card-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h2>Пример кода</h2>
+                        <p class="text-muted">Ключевая логика получения данных</p>
+                    </div>
+                    <div class="code-block">
+                        <pre><code class="language-csharp">
+public class TenderService : ITenderService
+{
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ITenderHtmlParser _htmlParser;
+    
+    public TenderService(
+        IHttpClientFactory httpClientFactory,
+        ITenderHtmlParser htmlParser)
+    {
+        _httpClientFactory = httpClientFactory;
+        _htmlParser = htmlParser;
+    }
+    
+    public async Task&lt;CompleteTenderInfo&gt; GetCompleteTenderInfoAsync(int tenderId)
+    {
+        // Шаг 1: Получаем базовую информацию через API
+        var basicInfo = await GetBasicTenderInfoAsync(tenderId);
+        if (basicInfo == null) return null;
+        
+        // Шаг 2: Парсим HTML страницу извещения
+        var html = await GetTradePageHtmlAsync(tenderId);
+        var additionalInfo = await _htmlParser.ParseAdditionalInfoAsync(html);
+        
+        // Шаг 3: Получаем список документации
+        var documents = await GetTenderDocumentsAsync(tenderId);
+        
+        return new CompleteTenderInfo
+        {
+            BasicInfo = basicInfo,
+            AdditionalInfo = additionalInfo,
+            Documents = documents
+        };
+    }
+}
+                    </code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Результаты -->
+        <div class="row mb-5" data-aos="fade-up" data-aos-delay="400" id="demo">
+            <div class="col-12">
+                <div class="card-custom p-4">
+                    <div class="text-center mb-4">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h2>Пример вывода данных</h2>
+                        <p class="text-muted">Как выглядит результат работы программы</p>
+                    </div>
+
+                    <!-- Пример результата -->
+                    <div class="alert alert-success">
+                        <h5><i class="fas fa-gavel me-2"></i> Тендер №1763198</h5>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Наименование:</strong> Поставка шприцов одноразовых<br>
+                                <strong>Статус:</strong> <span class="badge bg-success">Прием предложений</span><br>
+                                <strong>Заказчик:</strong> ГБСУСО МО "Куровской ПНИ"<br>
+                                <strong>НМЦ:</strong> 53 080,00 ₽
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Дата публикации:</strong> 30.04.2021 15:13:10<br>
+                                <strong>Окончание подачи:</strong> 12.05.2021 15:00:00<br>
+                                <strong>Место поставки:</strong> Московская область, г. Куровское
+                            </div>
+                        </div>
+
+                        <h6 class="mt-3"><i class="fas fa-boxes me-2"></i>Состав лота:</h6>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Наименование</th>
+                                    <th>Ед. изм.</th>
+                                    <th>Кол-во</th>
+                                    <th>Цена за ед.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Шприц 2 мл</td><td>шт</td><td>1000</td><td>15,00 ₽</td></tr>
+                                <tr><td>Шприц 5 мл</td><td>шт</td><td>800</td><td>18,50 ₽</td></tr>
+                                <tr><td>Шприц 10 мл</td><td>шт</td><td>500</td><td>22,00 ₽</td></tr>
+                            </tbody>
+                        </table>
+
+                        <h6 class="mt-3"><i class="fas fa-file-alt me-2"></i>Документация:</h6>
+                        <ul>
+                            <li><a href="#">Проект договора (поставка шприцов одноразовых).docx</a></li>
+                            <li><a href="#">Техническое задание.docx</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Статистика -->
+        <div class="row mb-5" data-aos="fade-up" data-aos-delay="500">
+            <div class="col-md-4">
+                <div class="card-custom p-4 text-center">
+                    <div class="stat-number">3</div>
+                    <p>Этапа получения данных</p>
+                    <small class="text-muted">API → HTML → Документы</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-custom p-4 text-center">
+                    <div class="stat-number">100%</div>
+                    <p>Обработка ошибок</p>
+                    <small class="text-muted">Валидация ввода и исключений</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-custom p-4 text-center">
+                    <div class="stat-number">&lt;1с</div>
+                    <p>Среднее время ответа</p>
+                    <small class="text-muted">Оптимизированные запросы</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- GitHub CTA -->
+        <div class="row" data-aos="fade-up" data-aos-delay="600">
+            <div class="col-12">
+                <div class="card-custom p-5 text-center bg-dark text-white" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                    <i class="fab fa-github fa-4x mb-3"></i>
+                    <h3>Готовы посмотреть код?</h3>
+                    <p class="mb-4">Проект полностью открыт и доступен на GitHub</p>
+                    <a href="https://github.com/yourusername/tender-parser" class="btn btn-light btn-lg" target="_blank">
+                        <i class="fab fa-github me-2"></i> Перейти на GitHub
+                    </a>
+                    <div class="mt-3">
+                        <small>
+                            <i class="fas fa-star me-1"></i> Не забудьте поставить звезду, если проект оказался полезным!
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-12">
+                    <i class="fas fa-code fa-2x mb-3"></i>
+                    <p>Тестовое задание для позиции .NET Developer</p>
+                    <p class="small">
+                        Разработано с использованием .NET 8, C#, ASP.NET Core<br>
+                        © 2026
+                    </p>
+                    <div class="mt-3">
+                        <a href="https://github.com/Stanislaw-P/Tender-parsing" class="text-white me-3"><i class="fab fa-github fa-lg"></i></a>
+                        <a href="https://vk.com/maieha" class="text-white me-3"><i class="fab fa-vk fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+
+    <script>
+        // Инициализация анимаций
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+
+        // Инициализация подсветки кода
+        hljs.highlightAll();
+
+        // Плавный скролл для якорных ссылок
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Добавляем динамическую статистику
+        const stats = document.querySelectorAll('.stat-number');
+        const animateValue = (element, start, end, duration) => {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                element.innerHTML = value + (element.innerHTML.includes('%') ? '%' :
+                                  element.innerHTML.includes('с') ? 'с' : '');
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        };
+
+        // Анимация статистики при скролле
+        const observerOptions = {
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const stat = entry.target;
+                    const text = stat.innerText;
+                    if (text === '3') animateValue(stat, 0, 3, 1000);
+                    if (text === '100%') animateValue(stat, 0, 100, 1000);
+                    if (text === '<1с') animateValue(stat, 0, 1, 1000);
+                    observer.unobserve(stat);
+                }
+            });
+        }, observerOptions);
+
+        stats.forEach(stat => observer.observe(stat));
+    </script>
+
+</body>
+</html>

@@ -1,7 +1,23 @@
+using Tender_parsing.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddHttpClient("MarketMosregApi", client =>
+{
+    client.BaseAddress = new Uri("https://api.market.mosreg.ru");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+
+builder.Services.AddHttpClient("MarketMosregWeb", client =>
+{
+    client.BaseAddress = new Uri("https://market.mosreg.ru");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+
+builder.Services.AddScoped<ITenderApiService, TenderApiService>();
 
 var app = builder.Build();
 
