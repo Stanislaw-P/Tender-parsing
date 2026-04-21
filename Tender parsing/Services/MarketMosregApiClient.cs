@@ -1,40 +1,53 @@
-﻿using Tender_parsing.Models;
+﻿using System.Text.Json;
+using Tender_parsing.Models;
 
 namespace Tender_parsing.Services
 {
     public class MarketMosregApiClient : IMarketMosregApiClient
     {
         readonly IHttpClientFactory _httpClientFactory;
+        readonly ILogger<MarketMosregApiClient> _logger;
 
-        public MarketMosregApiClient(IHttpClientFactory httpClientFactory)
+        public MarketMosregApiClient(IHttpClientFactory httpClientFactory, ILogger<MarketMosregApiClient> logger)
         {
             _httpClientFactory = httpClientFactory;
+            _logger = logger;
         }
 
-
-        /// <summary>
-        /// Получить базовую информацию о тендере
-        /// </summary>
-        /// <param name="tenderId"></param>
-        /// <returns></returns>
-        public async Task<string> GetBasicTenderInfoAsync(string tenderId)
+        public async Task<TenderBasicInfo> GetBasicTenderInfoAsync(string tenderId)
         {
-            var httpClient = _httpClientFactory.CreateClient("MarketMosregApi");
+            try
+            {
+                var requestBody = new
+                {
+                    page = 1,
+                    itemsPerPage = 10,
+                    Id = tenderId
+                };
 
-            var response = await httpClient.PostAsJsonAsync(
-                "api/Trade/GetTradesForParticipantOrAnonymous",
-                new { page = 1, itemsPerPage = 10, Id = tenderId }
-            );
-            response.EnsureSuccessStatusCode();
+                var httpClient = _httpClientFactory.CreateClient("MarketMosregApi");
 
-            return await response.Content.ReadAsStringAsync();
+                var response = await httpClient.PostAsJsonAsync(
+                    "api/Trade/GetTradesForParticipantOrAnonymous",
+                    requestBody);
+
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var apiResponse = JsonSerializer.Deserialize<TradesApiResponse>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                return apiResponse?.invdata?.FirstOrDefault() ?? new TenderBasicInfo();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при получении базовой информации для тендера {TenderId}", tenderId);
+                throw;
+            }
         }
 
-        /// <summary>
-        /// Получить Получить html страницу извещения тендера
-        /// </summary>
-        /// <param name="tenderId"></param>
-        /// <returns></returns>
         public async Task<string> GetTradePageHtmlAsync(string tenderId)
         {
             var httpClient = _httpClientFactory.CreateClient("MarketMosregWeb");
@@ -45,11 +58,6 @@ namespace Tender_parsing.Services
             return await response.Content.ReadAsStringAsync();
         }
 
-        /// <summary>
-        /// Получить сипсок документов тендера
-        /// </summary>
-        /// <param name="tenderId"></param>
-        /// <returns></returns>
         public async Task<List<TenderDocument>> GetTenderDocumentsAsync(string tenderId)
         {
             var httpClient = _httpClientFactory.CreateClient("MarketMosregApi");
