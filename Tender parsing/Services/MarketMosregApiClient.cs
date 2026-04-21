@@ -2,15 +2,21 @@
 
 namespace Tender_parsing.Services
 {
-    public class TenderApiService : ITenderApiService
+    public class MarketMosregApiClient : IMarketMosregApiClient
     {
         readonly IHttpClientFactory _httpClientFactory;
 
-        public TenderApiService(IHttpClientFactory httpClientFactory)
+        public MarketMosregApiClient(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
 
+
+        /// <summary>
+        /// Получить базовую информацию о тендере
+        /// </summary>
+        /// <param name="tenderId"></param>
+        /// <returns></returns>
         public async Task<string> GetBasicTenderInfoAsync(string tenderId)
         {
             var httpClient = _httpClientFactory.CreateClient("MarketMosregApi");
@@ -24,6 +30,11 @@ namespace Tender_parsing.Services
             return await response.Content.ReadAsStringAsync();
         }
 
+        /// <summary>
+        /// Получить Получить html страницу извещения тендера
+        /// </summary>
+        /// <param name="tenderId"></param>
+        /// <returns></returns>
         public async Task<string> GetTradePageHtmlAsync(string tenderId)
         {
             var httpClient = _httpClientFactory.CreateClient("MarketMosregWeb");
@@ -34,6 +45,11 @@ namespace Tender_parsing.Services
             return await response.Content.ReadAsStringAsync();
         }
 
+        /// <summary>
+        /// Получить сипсок документов тендера
+        /// </summary>
+        /// <param name="tenderId"></param>
+        /// <returns></returns>
         public async Task<List<TenderDocument>> GetTenderDocumentsAsync(string tenderId)
         {
             var httpClient = _httpClientFactory.CreateClient("MarketMosregApi");

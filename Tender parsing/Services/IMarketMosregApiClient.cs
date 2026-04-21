@@ -3,7 +3,7 @@ using Tender_parsing.Models;
 
 namespace Tender_parsing.Services
 {
-    public interface ITenderApiService
+    public interface IMarketMosregApiClient
     {
         Task<string> GetBasicTenderInfoAsync(string tenderId);
         Task<List<TenderDocument>> GetTenderDocumentsAsync(string tenderId);

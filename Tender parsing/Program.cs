@@ -17,7 +17,7 @@ builder.Services.AddHttpClient("MarketMosregWeb", client =>
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
-builder.Services.AddScoped<ITenderApiService, TenderApiService>();
+builder.Services.AddScoped<IMarketMosregApiClient, MarketMosregApiClient>();
 
 var app = builder.Build();
 

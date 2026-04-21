@@ -7,10 +7,10 @@ namespace Tender_parsing.Controllers
 {
     public class HomeController : Controller
     {
-        readonly ITenderApiService _tenderService; 
+        readonly IMarketMosregApiClient _tenderService;
         readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger, ITenderApiService tenderService)
+        public HomeController(ILogger<HomeController> logger, IMarketMosregApiClient tenderService)
         {
             _logger = logger;
             _tenderService = tenderService;
