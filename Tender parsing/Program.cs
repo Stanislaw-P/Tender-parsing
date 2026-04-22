@@ -18,6 +18,9 @@ builder.Services.AddHttpClient("MarketMosregWeb", client =>
 });
 
 builder.Services.AddScoped<IMarketMosregApiClient, MarketMosregApiClient>();
+builder.Services.AddScoped<ITenderService, TenderService>();
+builder.Services.AddScoped<ITenderHtmlParser, TenderHtmlParser>();
+
 
 var app = builder.Build();
 

@@ -360,7 +360,6 @@
                         <span class="tech-item"><i class="fas fa-code"></i> C# 13</span>
                         <span class="tech-item"><i class="fas fa-globe"></i> ASP.NET Core</span>
                         <span class="tech-item"><i class="fas fa-database"></i> HttpClient</span>
-                        <span class="tech-item"><i class="fas fa-code-branch"></i> HtmlAgilityPack</span>
                         <span class="tech-item"><i class="fas fa-file-code"></i> System.Text.Json</span>
                         <span class="tech-item"><i class="fab fa-bootstrap"></i> Bootstrap 5</span>
                         <span class="tech-item"><i class="fab fa-js"></i> JavaScript (ES6)</span>
@@ -422,58 +421,6 @@
             </div>
         </div>
 
-        <!-- Пример кода -->
-        <div class="row mb-5" data-aos="fade-up" data-aos-delay="300">
-            <div class="col-12">
-                <div class="card-custom p-4">
-                    <div class="text-center mb-4">
-                        <div class="card-icon">
-                            <i class="fas fa-code"></i>
-                        </div>
-                        <h2>Пример кода</h2>
-                        <p class="text-muted">Ключевая логика получения данных</p>
-                    </div>
-                    <div class="code-block">
-                        <pre><code class="language-csharp">
-public class TenderService : ITenderService
-{
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ITenderHtmlParser _htmlParser;
-    
-    public TenderService(
-        IHttpClientFactory httpClientFactory,
-        ITenderHtmlParser htmlParser)
-    {
-        _httpClientFactory = httpClientFactory;
-        _htmlParser = htmlParser;
-    }
-    
-    public async Task&lt;CompleteTenderInfo&gt; GetCompleteTenderInfoAsync(int tenderId)
-    {
-        // Шаг 1: Получаем базовую информацию через API
-        var basicInfo = await GetBasicTenderInfoAsync(tenderId);
-        if (basicInfo == null) return null;
-        
-        // Шаг 2: Парсим HTML страницу извещения
-        var html = await GetTradePageHtmlAsync(tenderId);
-        var additionalInfo = await _htmlParser.ParseAdditionalInfoAsync(html);
-        
-        // Шаг 3: Получаем список документации
-        var documents = await GetTenderDocumentsAsync(tenderId);
-        
-        return new CompleteTenderInfo
-        {
-            BasicInfo = basicInfo,
-            AdditionalInfo = additionalInfo,
-            Documents = documents
-        };
-    }
-}
-                    </code></pre>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Результаты -->
         <div class="row mb-5" data-aos="fade-up" data-aos-delay="400" id="demo">

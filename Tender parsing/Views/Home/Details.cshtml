@@ -1,0 +1,271 @@
+﻿@model CompleteTenderInfo
+
+@{
+    ViewData["Title"] = $"Тендер №{Model.BasicInfo.Id} - {Model.BasicInfo.TradeName}";
+    var utcOffset = TimeSpan.FromHours(7); // UTC+7 для Новосибирска
+}
+
+<div class="container mt-4">
+    <!-- Хлебные крошки -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-white">Главная</a></li>
+            <li class="breadcrumb-item active text-white-50" aria-current="page">Тендер №@Model.BasicInfo.Id</li>
+        </ol>
+    </nav>
+
+    <!-- Заголовок -->
+    <div class="card shadow-lg border-0 rounded-4 mb-4">
+        <div class="card-header bg-gradient-primary text-white rounded-top-4" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-gavel fa-2x me-2"></i>
+                    <span class="h4 mb-0">@Model.BasicInfo.TradeName</span>
+                </div>
+                <span class="status-badge status-@Model.StatusColorClass">
+                    <i class="fas fa-circle me-1" style="font-size: 0.6rem;"></i>
+                    @Model.BasicInfo.TradeStateName
+                </span>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <!-- Основная информация -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="info-item">
+                        <label class="text-muted small text-uppercase">Номер тендера</label>
+                        <div class="h5">
+                            <span class="badge bg-primary">@Model.BasicInfo.Id</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-item">
+                        <label class="text-muted small text-uppercase">Заказчик</label>
+                        <div class="fw-bold">@Model.BasicInfo.CustomerFullName</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="info-item">
+                        <label class="text-muted small text-uppercase">
+                            <i class="fas fa-ruble-sign"></i> Начальная цена (НМЦ)
+                        </label>
+                        <div class="h4 text-primary">
+                            @Model.BasicInfo.InitialPrice.ToString("N2") ₽
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-item">
+                        <label class="text-muted small text-uppercase">
+                            <i class="fas fa-calendar-alt"></i> Дата публикации
+                        </label>
+                        <div class="fw-bold">
+                            @Model.BasicInfo.PublicationDate.Add(utcOffset).ToString("dd.MM.yyyy HH:mm:ss")
+                            <span class="text-muted small">(НСК)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-item">
+                        <label class="text-muted small text-uppercase">
+                            <i class="fas fa-hourglass-end"></i> Окончание подачи заявок
+                        </label>
+                        <div class="fw-bold @(Model.TimeRemaining.TotalHours < 24 ? "text-danger" : "")">
+                            @Model.BasicInfo.FillingApplicationEndDate.Add(utcOffset).ToString("dd.MM.yyyy HH:mm:ss")
+                            <span class="text-muted small">(НСК)</span>
+                            @if (Model.TimeRemaining.TotalHours > 0 && Model.TimeRemaining.TotalHours < 24)
+                            {
+                                <span class="badge bg-danger ms-2">Осталось менее 24 часов</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Таймер обратного отсчета -->
+            @if (Model.TimeRemaining.TotalSeconds > 0)
+            {
+                <div class="alert alert-warning">
+                    <i class="fas fa-clock me-2"></i>
+                    <strong>До окончания подачи заявок:</strong>
+                    <span id="countdownTimer" class="fw-bold"></span>
+                </div>
+            }
+
+            <!-- Место поставки -->
+            <div class="info-item mb-4">
+                <label class="text-muted small text-uppercase">
+                    <i class="fas fa-map-marker-alt"></i> Место поставки
+                </label>
+                <div class="p-3 bg-light rounded">
+                    <i class="fas fa-location-dot text-primary me-2"></i>
+                    @(string.IsNullOrEmpty(Model.AdditionalInfo.DeliveryPlace) ? "Не указано" : Model.AdditionalInfo.DeliveryPlace)
+                </div>
+            </div>
+
+            <!-- Состав лота -->
+            @if (Model.AdditionalInfo.LotItems.Any())
+            {
+                <div class="mb-4">
+                    <label class="text-muted small text-uppercase mb-2">
+                        <i class="fas fa-boxes"></i> Состав лота
+                    </label>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Наименование</th>
+                                    <th>Ед. изм.</th>
+                                    <th class="text-end">Кол-во</th>
+                                    <th class="text-end">Цена за ед.</th>
+                                    <th class="text-end">Сумма</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.AdditionalInfo.LotItems)
+                                {
+                                    <tr>
+                                        <td>@item.Name</td>
+                                        <td>@item.Unit</td>
+                                        <td class="text-end">@item.Quantity.ToString("N2")</td>
+                                        <td class="text-end">@item.UnitPrice.ToString("N2") ₽</td>
+                                        <td class="text-end fw-bold">@item.TotalPrice.ToString("N2") ₽</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="4" class="text-end fw-bold">Итого:</td>
+                                    <td class="text-end fw-bold text-primary">
+                                        @Model.AdditionalInfo.LotItems.Sum(x => x.TotalPrice).ToString("N2") ₽
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            }
+
+            <!-- Документация -->
+            @if (Model.Documents.Any())
+            {
+                <div class="mb-3">
+                    <label class="text-muted small text-uppercase mb-2">
+                        <i class="fas fa-paperclip"></i> Документация (@Model.Documents.Count файлов)
+                    </label>
+                    <div class="list-group">
+                        @foreach (var doc in Model.Documents)
+                        {
+                            <a href="@doc.Url" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" target="_blank">
+                                <div>
+                                    <i class="fas fa-file-alt text-primary me-2"></i>
+                                    @doc.FileName
+                                </div>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    @doc.UploadDate.Add(utcOffset).ToString("dd.MM.yyyy HH:mm")
+                                </small>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- Источник данных -->
+            <div class="alert alert-secondary small mt-3">
+                <i class="fas fa-database me-2"></i>
+                <strong>Источник данных:</strong> @Model.BasicInfo.SourcePlatformName |
+                <strong>ID организации:</strong> @Model.BasicInfo.OrganizationId
+            </div>
+        </div>
+        <div class="card-footer bg-white">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Новый поиск
+            </a>
+            <button onclick="window.print()" class="btn btn-outline-primary ms-2">
+                <i class="fas fa-print me-2"></i> Печать
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Таймер обратного отсчета
+        @if (Model.TimeRemaining.TotalSeconds > 0)
+        {
+                <text>
+                const endDate = new Date('@Model.BasicInfo.FillingApplicationEndDate.ToString("yyyy-MM-ddTHH:mm:ssZ")');
+                const utcOffset = 7 * 60 * 60 * 1000; // 7 часов в миллисекундах
+
+                function updateCountdown() {
+                    const now = new Date();
+                    const distance = endDate - now;
+
+                    if (distance < 0) {
+                        document.getElementById('countdownTimer').innerHTML = 'Прием заявок завершен';
+                        return;
+                    }
+
+                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    let timeString = '';
+                    if (days > 0) timeString += days + 'д ';
+                    timeString += hours + 'ч ' + minutes + 'м ' + seconds + 'с';
+
+                    document.getElementById('countdownTimer').innerHTML = timeString;
+                }
+
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+                </text>
+        }
+    </script>
+}
+
+<style>
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .status-success {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-secondary {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .status-danger {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .status-info {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .info-item {
+        margin-bottom: 0.5rem;
+    }
+
+        .info-item label {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+</style>
